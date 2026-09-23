@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengacak Kelompok Mahasiswa - Classic Retro</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #F4EAD5;
+      --card-bg: #FFF8EA;
+      --text-main: #2C221E;
+      --accent-terracotta: #D96B43;
+      --accent-mustard: #E6A15C;
+      --accent-sage: #8A9A86;
+      --accent-brown: #5C3D2E;
+      --border-color: #2C221E;
+      --shadow-hard: 4px 4px 0px #2C221E;
+      --shadow-hard-hover: 6px 6px 0px #2C221E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Courier Prime', monospace;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-image: radial-gradient(var(--accent-brown) 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+      opacity: 0.98;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header Retro */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      border: 3px solid var(--border-color);
+      padding: 2rem 1rem;
+      background-color: var(--card-bg);
+      box-shadow: var(--shadow-hard);
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: -12px;
+      bottom: -12px;
+      border: 2px dashed var(--border-color);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-terracotta);
+      margin-bottom: 0.5rem;
+      text-shadow: 1px 1px 0px var(--border-color);
+    }
+
+    p.subtitle {
+      font-style: italic;
+      color: var(--accent-brown);
+      font-size: 1rem;
+    }
+
+    /* Grid Layout */
+    .app-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .app-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Retro Card */
+    .card {
+      background-color: var(--card-bg);
+      border: 3px solid var(--border-color);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-hard);
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent-brown);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Form Inputs */
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      background-color: #FFFDF7;
+      border: 2px solid var(--border-color);
+      padding: 0.75rem;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      background-color: #FFFFFF;
+      box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+    }
+
+    .meta-info {
+      font-size: 0.85rem;
+      color: var(--accent-brown);
+      margin-top: 0.4rem;
+      text-align: right;
+    }
+
+    .mode-selector {
+      margin: 1.2rem 0;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem;
+      border: 2px solid var(--border-color);
+      background-color: #FFFDF7;
+      font-family: 'Courier Prime', monospace;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      outline: none;
+    }
+
+    /* Retro Buttons */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 0.8rem 1.2rem;
+      font-family: 'Courier Prime', monospace;
+      font-weight: bold;
+      font-size: 1rem;
+      text-transform: uppercase;
+      color: var(--text-main);
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.1s ease;
+      box-shadow: var(--shadow-hard);
+      text-align: center;
+      text-decoration: none;
+      margin-top: 1rem;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-terracotta);
+      color: #FFFDF7;
+    }
+
+    .btn-secondary {
+      background-color: var(--accent-mustard);
+    }
+
+    .btn-sage {
+      background-color: var(--accent-sage);
+      color: #FFFDF7;
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-hard-hover);
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px #2C221E;
+    }
+
+    /* Output Results */
+    .results-section {
+      margin-top: 2rem;
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .group-card {
+      background-color: #FFFDF7;
+      border: 2px solid var(--border-color);
+      box-shadow: 3px 3px 0px var(--border-color);
+    }
+
+    .group-header {
+      background-color: var(--accent-mustard);
+      padding: 0.6rem 1rem;
+      font-family: 'Playfair Display', serif;
+      font-weight: bold;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .group-card:nth-child(even) .group-header {
+      background-color: var(--accent-sage);
+      color: #FFFDF7;
+    }
+
+    .group-list {
+      list-style: none;
+      padding: 0.8rem 1rem;
+    }
+
+    .group-list li {
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed #D3C5B2;
+      font-size: 0.9rem;
+    }
+
+    .group-list li:last-child {
+      border-bottom: none;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Random Kelompok</h1>
+      <p class="subtitle">Generator Pengacak Kelompok Mahasiswa Retro Classic</p>
+    </header>
+
+    <div class="app-grid">
+      <!-- Section Left: Input Nama -->
+      <div class="card">
+        <div class="card-title">
+          <span>Daftar Mahasiswa</span>
+        </div>
+        <label for="studentList">Masukkan Nama (1 nama per baris):</label>
+        <textarea id="studentList" placeholder="Contoh:&#10;Budi Santoso&#10;Siti Rahma&#10;Ahmad Dahlan&#10;Dewi Lestari"></textarea>
+        <div class="meta-info">Total: <span id="totalCount">0</span> Mahasiswa</div>
+      </div>
+
+      <!-- Section Right: Pengaturan -->
+      <div class="card">
+        <div class="card-title">
+          <span>Pengaturan Kelompok</span>
+        </div>
+
+        <div class="mode-selector">
+          <label>Metode Pembagian:</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="mode" value="groupCount" checked onchange="toggleMode()">
+              Jumlah Kelompok
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="mode" value="memberCount" onchange="toggleMode()">
+              Maks Anggota / Tim
+            </label>
+          </div>
+        </div>
+
+        <div id="groupCountInput">
+          <label for="numGroups">Berapa Banyak Kelompok?</label>
+          <input type="number" id="numGroups" min="1" value="4">
+        </div>
+
+        <div id="memberCountInput" class="hidden">
+          <label for="numMembers">Maksimal Anggota Per Kelompok?</label>
+          <input type="number" id="numMembers" min="1" value="5">
+        </div>
+
+        <button class="btn btn-primary" onclick="generateGroups()">Mulai Acak Kelompok</button>
+        <button class="btn btn-secondary" onclick="resetAll()">Reset Semua</button>
+      </div>
+    </div>
+
+    <!-- Section Results -->
+    <div id="resultsSection" class="results-section hidden">
+      <div class="card">
+        <div class="card-title">
+          <span>Hasil Pengacakan</span>
+          <button class="btn btn-sage" style="width: auto; margin-top:0; padding: 0.4rem 0.8rem; font-size:0.85rem;" onclick="copyResults()">Salin Teks</button>
+        </div>
+        <div id="groupGrid" class="group-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const studentListEl = document.getElementById('studentList');
+    const totalCountEl = document.getElementById('totalCount');
+    const resultsSection = document.getElementById('resultsSection');
+    const groupGrid = document.getElementById('groupGrid');
+
+    // Load saved data on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('retro_students');
+      if (saved) {
+        studentListEl.value = saved;
+        updateCount();
+      }
+    });
+
+    studentListEl.addEventListener('input', () => {
+      updateCount();
+      localStorage.setItem('retro_students', studentListEl.value);
+    });
+
+    function updateCount() {
+      const names = getNames();
+      totalCountEl.textContent = names.length;
+    }
+
+    function getNames() {
+      return studentListEl.value
+        .split('
+')
+        .map(n => n.trim())
+        .filter(n => n.length > 0);
+    }
+
+    function toggleMode() {
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      if (mode === 'groupCount') {
+        document.getElementById('groupCountInput').classList.remove('hidden');
+        document.getElementById('memberCountInput').classList.add('hidden');
+      } else {
+        document.getElementById('groupCountInput').classList.add('hidden');
+        document.getElementById('memberCountInput').classList.remove('hidden');
+      }
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function generateGroups() {
+      const names = getNames();
+      if (names.length === 0) {
+        alert('Silakan masukkan minimal satu nama mahasiswa!');
+        return;
+      }
+
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const shuffled = shuffle(names);
+      let groups = [];
+
+      if (mode === 'groupCount') {
+        const numGroups = parseInt(document.getElementById('numGroups').value) || 1;
+        const targetGroups = Math.max(1, Math.min(numGroups, names.length));
+        
+        for (let i = 0; i < targetGroups; i++) {
+          groups.push([]);
+        }
+        
+        shuffled.forEach((name, idx) => {
+          groups[idx % targetGroups].push(name);
+        });
+      } else {
+        const maxMembers = parseInt(document.getElementById('numMembers').value) || 1;
+        const targetSize = Math.max(1, maxMembers);
+        
+        for (let i = 0; i < shuffled.length; i += targetSize) {
+          groups.push(shuffled.slice(i, i + targetSize));
+        }
+      }
+
+      renderGroups(groups);
+    }
+
+    function renderGroups(groups) {
+      groupGrid.innerHTML = '';
+      groups.forEach((group, index) => {
+        const card = document.createElement('div');
+        card.className = 'group-card';
+        
+        let membersList = group.map((m, i) => `<li>${i + 1}. ${escapeHtml(m)}</li>`).join('');
+        
+        card.innerHTML = `
+          <div class="group-header">
+            <span>Kelompok ${index + 1}</span>
+            <span>(${group.length})</span>
+          </div>
+          <ul class="group-list">
+            ${membersList}
+          </ul>
+        `;
+        groupGrid.appendChild(card);
+      });
+
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyResults() {
+      const cards = document.querySelectorAll('.group-card');
+      if (cards.length === 0) return;
+
+      let text = '=== HASIL PEMBAGIAN KELOMPOK ===
+
+';
+      cards.forEach((card) => {
+        const title = card.querySelector('.group-header').innerText;
+        text += title + '
+';
+        const items = card.querySelectorAll('li');
+        items.forEach(item => {
+          text += item.innerText + '
+';
+        });
+        text += '
+';
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Hasil kelompok berhasil disalin ke clipboard!');
+      });
+    }
+
+    function resetAll() {
+      if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
+        studentListEl.value = '';
+        localStorage.removeItem('retro_students');
+        updateCount();
+        resultsSection.classList.add('hidden');
+        groupGrid.innerHTML = '';
+      }
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
