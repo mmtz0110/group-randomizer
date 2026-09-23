@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesin Pengacak Kelompok Retro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Space Grotesk & Courier Prime & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Space+Grotesk:wght@400;500;600;700&display=display" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['Courier Prime', 'monospace'],
+                    },
+                    colors: {
+                        cream: {
+                            50: '#fffdfa',
+                            100: '#fbf7f0',
+                            200: '#f4ebd9',
+                            300: '#e8d8b8',
+                        },
+                        retro: {
+                            paper: '#f8f3e6',
+                            ink: '#2b2621',
+                            terracotta: '#c85a32',
+                            terracottaHover: '#b04b26',
+                            mustard: '#e3a835',
+                            mustardHover: '#cb9325',
+                            sage: '#788a6d',
+                            sageHover: '#65755b',
+                            brown: '#4a3b32',
+                            sand: '#e2d3b7',
+                            navy: '#2d3e50',
+                            cardBg: '#fffbf2'
+                        }
+                    },
+                    boxShadow: {
+                        'retro-sm': '2px 2px 0px #2b2621',
+                        'retro': '4px 4px 0px #2b2621',
+                        'retro-lg': '6px 6px 0px #2b2621',
+                        'retro-xl': '8px 8px 0px #2b2621',
+                        'retro-inset': 'inset 2px 2px 0px #2b2621',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #f4ebd9;
+            color: #2b2621;
+            background-image: radial-gradient(#d3c2a3 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .paper-texture {
+            background-color: #fffbf2;
+            background-image: repeating-linear-gradient(#f4ebd9 0px, #f4ebd9 1px, transparent 1px, transparent 24px);
+            background-size: 100% 24px;
+        }
+
+        .retro-btn {
+            transition: all 0.1s ease;
+        }
+        .retro-btn:active:not(:disabled) {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px #2b2621 !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e8d8b8;
+            border-left: 2px solid #2b2621;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c85a32;
+            border: 2px solid #2b2621;
+        }
+
+        /* Stamp animation */
+        @keyframes stamp {
+            0% { transform: scale(3) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(0.9) rotate(3deg); opacity: 1; }
+            100% { transform: scale(1) rotate(-2deg); opacity: 1; }
+        }
+        .stamp-anim {
+            animation: stamp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-retro-mustard selection:text-retro-ink">
+
+    <!-- Header Section -->
+    <header class="border-b-4 border-retro-ink bg-retro-paper py-4 px-4 sm:px-8 shadow-retro sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-retro-mustard border-2 border-retro-ink rounded-none flex items-center justify-center shadow-retro-sm">
+                    <i data-lucide="shuffle" class="w-7 h-7 text-retro-ink"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight text-retro-ink leading-none">
+                        MESIN ACAK KELOMPOK
+                    </h1>
+                    <p class="font-mono text-xs text-retro-brown mt-1 uppercase tracking-wider font-semibold">
+                        ★ Edisi Klasik / Arsip Mahasiswa ★
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Quick Controls -->
+            <div class="flex items-center gap-2">
+                <button id="clear-all-btn" class="retro-btn text-xs font-bold font-mono px-3 py-2 bg-cream-200 hover:bg-cream-300 border-2 border-retro-ink shadow-retro-sm flex items-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    RESET SEMUA
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- LEFT PANEL: Student Input & Configuration -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Card 1: Input Daftar Mahasiswa -->
+                <div class="bg-retro-cardBg border-4 border-retro-ink p-5 shadow-retro-lg relative">
+                    <!-- Corner Tape Decoration -->
+                    <div class="absolute -top-3 -left-3 bg-retro-sand border-2 border-retro-ink text-[10px] font-mono px-2 py-0.5 shadow-retro-sm transform -rotate-6">
+                        DOKUMEN #01
+                    </div>
+
+                    <div class="flex items-center justify-between mt-2 mb-3 border-b-2 border-retro-ink pb-2">
+                        <label for="student-input" class="font-serif text-lg font-bold flex items-center gap-2">
+                            <i data-lucide="pen-tool" class="w-5 h-5 text-retro-terracotta"></i>
+                            Daftar Mahasiswa
+                        </label>
+                        <span id="student-counter" class="font-mono text-xs font-bold px-2.5 py-1 bg-retro-mustard border-2 border-retro-ink shadow-retro-sm">
+                            0 Orang
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-retro-brown font-mono mb-2">
+                        * Masukkan nama (satu nama per baris atau pisahkan dengan koma). Tidak ada batasan jumlah.
+                    </p>
+
+                    <textarea id="student-input" rows="9" 
+                        placeholder="Contoh:&#10;Ahmad Fauzi&#10;Budi Santoso&#10;Citra Dewi&#10;Dina Permata"
+                        class="w-full p-3 font-mono text-xs bg-cream-100 border-2 border-retro-ink text-retro-ink placeholder-retro-brown/60 focus:bg-cream-50 focus:outline-none focus:ring-0 shadow-retro-inset custom-scrollbar leading-relaxed resize-none"></textarea>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 mt-4">
+                        <div class="flex items-center gap-2">
+                            <button id="add-sample-btn" class="retro-btn text-xs font-mono font-bold px-2.5 py-1.5 bg-retro-sage text-white hover:bg-retro-sageHover border-2 border-retro-ink shadow-retro-sm flex items-center gap-1">
+                                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                                Sampel (36 Nama)
+                            </button>
+                            <button id="clear-input-btn" class="retro-btn text-xs font-mono font-bold px-2.5 py-1.5 bg-retro-terracotta text-white hover:bg-retro-terracottaHover border-2 border-retro-ink shadow-retro-sm flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                Hapus
+                            </button>
+                        </div>
+                        <span id="save-status" class="text-[10px] font-mono text-retro-sage font-bold flex items-center gap-1 opacity-0 transition-opacity">
+                            <i data-lucide="check-circle" class="w-3 h-3"></i> Tersimpan
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Pengaturan Metode Pembagian -->
+                <div class="bg-retro-cardBg border-4 border-retro-ink p-5 shadow-retro-lg space-y-4">
+                    <div class="border-b-2 border-retro-ink pb-2">
+                        <h2 class="font-serif text-lg font-bold flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-5 h-5 text-retro-terracotta"></i>
+                            Atur Cara Pembagian
+                        </h2>
+                    </div>
+
+                    <!-- Mode Toggle -->
+                    <div class="grid grid-cols-2 gap-2 p-1 bg-cream-200 border-2 border-retro-ink">
+                        <button id="mode-count-btn" class="py-2 text-xs font-bold font-mono border-2 border-retro-ink bg-retro-mustard text-retro-ink shadow-retro-sm flex items-center justify-center gap-1 transition-all">
+                            <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                            Jumlah Kelompok
+                        </button>
+                        <button id="mode-capacity-btn" class="py-2 text-xs font-bold font-mono border-2 border-transparent text-retro-brown hover:text-retro-ink flex items-center justify-center gap-1 transition-all">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                            Maks Anggota / Tim
+                        </button>
+                    </div>
+
+                    <!-- Slider Controls -->
+                    <div id="control-count-group" class="space-y-2">
+                        <div class="flex items-center justify-between font-mono text-xs font-bold">
+                            <label for="teams-count-range">Target Jumlah Kelompok:</label>
+                            <span id="teams-count-display" class="px-2 py-0.5 bg-retro-paper border-2 border-retro-ink text-retro-terracotta font-extrabold">7 Kelompok</span>
+                        </div>
+                        <input type="range" id="teams-count-range" min="2" max="25" value="7" 
+                            class="w-full accent-retro-terracotta cursor-pointer h-3 bg-cream-300 border-2 border-retro-ink">
+                    </div>
+
+                    <div id="control-capacity-group" class="space-y-2 hidden">
+                        <div class="flex items-center justify-between font-mono text-xs font-bold">
+                            <label for="capacity-range">Maks Anggota per Kelompok:</label>
+                            <span id="capacity-display" class="px-2 py-0.5 bg-retro-paper border-2 border-retro-ink text-retro-terracotta font-extrabold">5 Anggota</span>
+                        </div>
+                        <input type="range" id="capacity-range" min="1" max="20" value="5" 
+                            class="w-full accent-retro-terracotta cursor-pointer h-3 bg-cream-300 border-2 border-retro-ink">
+                    </div>
+
+                    <!-- Dynamic Structure Breakdown Banner -->
+                    <div class="p-3 bg-cream-100 border-2 border-retro-ink text-xs font-mono space-y-1">
+                        <div class="font-bold text-retro-brown flex items-center gap-1">
+                            <i data-lucide="calculator" class="w-3.5 h-3.5 text-retro-terracotta"></i>
+                            <span>ESTIMASI STRUKTUR:</span>
+                        </div>
+                        <p id="structure-preview-text" class="text-retro-ink leading-relaxed">
+                            Isi nama mahasiswa untuk melihat perkiraan struktur tim.
+                        </p>
+                    </div>
+
+                    <!-- Action Trigger Button -->
+                    <button id="start-shuffle-btn" class="retro-btn w-full py-3.5 px-4 bg-retro-terracotta hover:bg-retro-terracottaHover text-white font-serif text-base font-bold tracking-wide border-2 border-retro-ink shadow-retro flex items-center justify-center gap-2">
+                        <i data-lucide="dice-5" class="w-5 h-5"></i>
+                        <span>MULAI ACAK KELOMPOK</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: Shuffled Output Cards Grid -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Output Bar & Utilities -->
+                <div class="bg-retro-cardBg border-4 border-retro-ink p-4 shadow-retro-lg flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="font-serif text-lg font-bold flex items-center gap-2">
+                            <i data-lucide="folder-open" class="w-5 h-5 text-retro-mustard"></i>
+                            Hasil Pembagian Kelompok
+                        </h2>
+                        <p class="font-mono text-xs text-retro-brown">
+                            Kartu arsip kelompok akan tercetak di bawah ini.
+                        </p>
+                    </div>
+
+                    <button id="copy-clipboard-btn" class="retro-btn text-xs font-mono font-bold px-3 py-2 bg-retro-mustard hover:bg-retro-mustardHover text-retro-ink border-2 border-retro-ink shadow-retro-sm flex items-center gap-1.5">
+                        <i data-lucide="clipboard-copy" class="w-4 h-4"></i>
+                        SALIN TEKS
+                    </button>
+                </div>
+
+                <!-- Teams Display Container -->
+                <div id="teams-output-container" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    
+                    <!-- Empty Placeholder View -->
+                    <div class="sm:col-span-2 bg-retro-cardBg border-4 border-dashed border-retro-ink p-10 text-center flex flex-col items-center justify-center space-y-3">
+                        <div class="w-16 h-16 bg-cream-200 border-2 border-retro-ink flex items-center justify-center shadow-retro-sm">
+                            <i data-lucide="users" class="w-8 h-8 text-retro-brown"></i>
+                        </div>
+                        <h3 class="font-serif text-lg font-bold">Belum Ada Kelompok Terbentuk</h3>
+                        <p class="font-mono text-xs text-retro-brown max-w-md leading-relaxed">
+                            Masukkan daftar mahasiswa di panel sebelah kiri lalu tekan tombol <b class="text-retro-terracotta">"MULAI ACAK KELOMPOK"</b>.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t-4 border-retro-ink bg-retro-paper py-4 px-4 text-center font-mono text-xs text-retro-brown mt-12">
+        <p>© Generator Kelompok Klasik • Bebas Batasan Jumlah • Penyimpanan Lokal Otomatis</p>
+    </footer>
+
+    <!-- Notification Toast Modal -->
+    <div id="retro-modal" class="fixed inset-0 bg-retro-ink/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-retro-cardBg border-4 border-retro-ink p-6 max-w-sm w-full shadow-retro-xl space-y-4 transform scale-95 transition-transform duration-200" id="retro-modal-box">
+            <div class="flex items-center gap-3 border-b-2 border-retro-ink pb-3">
+                <div id="modal-badge-icon" class="w-8 h-8 bg-retro-mustard border-2 border-retro-ink flex items-center justify-center">
+                    <i data-lucide="info" class="w-5 h-5 text-retro-ink"></i>
+                </div>
+                <h3 id="modal-title-text" class="font-serif font-bold text-lg">Pemberitahuan</h3>
+            </div>
+            <p id="modal-msg-text" class="font-mono text-xs text-retro-ink leading-relaxed"></p>
+            <button id="modal-ok-btn" class="retro-btn w-full py-2 bg-retro-terracotta text-white font-mono font-bold text-xs border-2 border-retro-ink shadow-retro-sm">
+                MENGERTI
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Sample 36 Students List
+        const SAMPLE_STUDENTS = [
+            "Ahmad Fauzi", "Budi Santoso", "Citra Dewi", "Dina Permata", "Eko Prasetyo",
+            "Fajar Nugraha", "Gita Gutawa", "Hadi Sucipto", "Indah Permata", "Joko Widodo",
+            "Kiki Amalia", "Lani Rahmawati", "Maya Putri", "Nugroho Setiawan", "Olivia Zalianty",
+            "Putra Perkasa", "Qori Sandioriva", "Rian Hidayat", "Siti Nurhaliza", "Tono Sudirjo",
+            "Umar Alfarisi", "Vina Panduwinata", "Wahyu Hidayat", "Xena Warrior", "Yusuf Mansur",
+            "Zahra Amelia", "Andi Wijaya", "Bella Saphira", "Chandra Liow", "Dina Olivia",
+            "Erlangga Putra", "Fitri Carlina", "Gilang Dirga", "Hesti Purwadinata", "Irfan Bachdim", "Julia Perez"
+        ];
+
+        // Color Palettes for Retro Cards Header Badges
+        const RETRO_CARD_STYLES = [
+            { bg: 'bg-retro-terracotta', text: 'text-white' },
+            { bg: 'bg-retro-mustard', text: 'text-retro-ink' },
+            { bg: 'bg-retro-sage', text: 'text-white' },
+            { bg: 'bg-retro-navy', text: 'text-white' },
+            { bg: 'bg-retro-brown', text: 'text-white' },
+        ];
+
+        // App State Variables
+        let currentMode = 'count'; // 'count' or 'capacity'
+        let currentTeamsData = [];
+
+        // DOM Elements
+        const studentInput = document.getElementById('student-input');
+        const studentCounter = document.getElementById('student-counter');
+        const addSampleBtn = document.getElementById('add-sample-btn');
+        const clearInputBtn = document.getElementById('clear-input-btn');
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        const saveStatus = document.getElementById('save-status');
+
+        const modeCountBtn = document.getElementById('mode-count-btn');
+        const modeCapacityBtn = document.getElementById('mode-capacity-btn');
+        const controlCountGroup = document.getElementById('control-count-group');
+        const controlCapacityGroup = document.getElementById('control-capacity-group');
+
+        const teamsCountRange = document.getElementById('teams-count-range');
+        const teamsCountDisplay = document.getElementById('teams-count-display');
+        const capacityRange = document.getElementById('capacity-range');
+        const capacityDisplay = document.getElementById('capacity-display');
+        const structurePreviewText = document.getElementById('structure-preview-text');
+
+        const startShuffleBtn = document.getElementById('start-shuffle-btn');
+        const copyClipboardBtn = document.getElementById('copy-clipboard-btn');
+        const teamsOutputContainer = document.getElementById('teams-output-container');
+
+        // Modal Elements
+        const retroModal = document.getElementById('retro-modal');
+        const retroModalBox = document.getElementById('retro-modal-box');
+        const modalTitleText = document.getElementById('modal-title-text');
+        const modalMsgText = document.getElementById('modal-msg-text');
+        const modalOkBtn = document.getElementById('modal-ok-btn');
+
+        // Initialize Application
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            updateStudentListState();
+            lucide.createIcons();
+        });
+
+        // Parse student names from textarea (supports raw lines & comma separated)
+        function getParsedStudentArray() {
+            const raw = studentInput.value;
+            if (!raw.trim()) return [];
+            return raw
+                .split(/\n|,/)
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+        }
+
+        // Save & Update Counters
+        function updateStudentListState() {
+            const list = getParsedStudentArray();
+            studentCounter.innerText = `${list.length} Orang`;
+            saveToLocalStorage();
+            updateStructurePreview();
+        }
+
+        studentInput.addEventListener('input', updateStudentListState);
+
+        // LocalStorage Handlers
+        function saveToLocalStorage() {
+            localStorage.setItem('retro_student_names', studentInput.value);
+            showSavedIndicator();
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('retro_student_names');
+            if (saved !== null) {
+                studentInput.value = saved;
+            }
+        }
+
+        let saveTimer;
+        function showSavedIndicator() {
+            saveStatus.classList.remove('opacity-0');
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                saveStatus.classList.add('opacity-0');
+            }, 1200);
+        }
+
+        // Sample Data Button
+        addSampleBtn.addEventListener('click', () => {
+            studentInput.value = SAMPLE_STUDENTS.join('\n');
+            updateStudentListState();
+        });
+
+        // Clear Inputs
+        clearInputBtn.addEventListener('click', () => {
+            studentInput.value = '';
+            updateStudentListState();
+        });
+
+        clearAllBtn.addEventListener('click', () => {
+            studentInput.value = '';
+            currentTeamsData = [];
+            localStorage.removeItem('retro_student_names');
+            renderEmptyPlaceholder();
+            updateStudentListState();
+            showModal('Reset Berhasil', 'Semua data nama dan hasil pengacakan telah dibersihkan.');
+        });
+
+        // Mode Toggling Controls
+        modeCountBtn.addEventListener('click', () => {
+            currentMode = 'count';
+            modeCountBtn.className = "py-2 text-xs font-bold font-mono border-2 border-retro-ink bg-retro-mustard text-retro-ink shadow-retro-sm flex items-center justify-center gap-1 transition-all";
+            modeCapacityBtn.className = "py-2 text-xs font-bold font-mono border-2 border-transparent text-retro-brown hover:text-retro-ink flex items-center justify-center gap-1 transition-all";
+            controlCountGroup.classList.remove('hidden');
+            controlCapacityGroup.classList.add('hidden');
+            updateStructurePreview();
+        });
+
+        modeCapacityBtn.addEventListener('click', () => {
+            currentMode = 'capacity';
+            modeCapacityBtn.className = "py-2 text-xs font-bold font-mono border-2 border-retro-ink bg-retro-mustard text-retro-ink shadow-retro-sm flex items-center justify-center gap-1 transition-all";
+            modeCountBtn.className = "py-2 text-xs font-bold font-mono border-2 border-transparent text-retro-brown hover:text-retro-ink flex items-center justify-center gap-1 transition-all";
+            controlCapacityGroup.classList.remove('hidden');
+            controlCountGroup.classList.add('hidden');
+            updateStructurePreview();
+        });
+
+        // Sliders Listeners
+        teamsCountRange.addEventListener('input', () => {
+            teamsCountDisplay.innerText = `${teamsCountRange.value} Kelompok`;
+            updateStructurePreview();
+        });
+
+        capacityRange.addEventListener('input', () => {
+            capacityDisplay.innerText = `${capacityRange.value} Anggota`;
+            updateStructurePreview();
+        });
+
+        function calculateDistribution() {
+            const students = getParsedStudentArray();
+            const total = students.length;
+
+            if (total === 0) return null;
+
+            let numTeams = 0;
+            let capacities = [];
+
+            if (currentMode === 'count') {
+                numTeams = parseInt(teamsCountRange.value) || 2;
+                if (numTeams > total) numTeams = total; // clamp to total students
+
+                const base = Math.floor(total / numTeams);
+                const remainder = total % numTeams;
+
+                for (let i = 0; i < numTeams; i++) {
+                    capacities.push(i < remainder ? base + 1 : base);
+                }
+            } else {
+                const maxCap = parseInt(capacityRange.value) || 5;
+                numTeams = Math.ceil(total / maxCap);
+                
+                const base = Math.floor(total / numTeams);
+                const remainder = total % numTeams;
+
+                for (let i = 0; i < numTeams; i++) {
+                    capacities.push(i < remainder ? base + 1 : base);
+                }
+            }
+
+            // Group summary breakdown
+            const summaryObj = {};
+            capacities.forEach(c => {
+                summaryObj[c] = (summaryObj[c] || 0) + 1;
+            });
+
+            const summaryArray = Object.keys(summaryObj)
+                .sort((a, b) => b - a)
+                .map(cap => `<b>${summaryObj[cap]} Kelompok</b> (${cap} orang)`);
+
+            return {
+                total,
+                numTeams,
+                capacities,
+                text: `${total} mahasiswa dipisah menjadi <b class="text-retro-terracotta">${numTeams} kelompok</b>: ${summaryArray.join(', ')}.`
+            };
+        }
+
+        function updateStructurePreview() {
+            const dist = calculateDistribution();
+            if (!dist) {
+                structurePreviewText.innerHTML = 'Isi daftar nama mahasiswa terlebih dahulu.';
+            } else {
+                structurePreviewText.innerHTML = dist.text;
+            }
+        }
+
+        startShuffleBtn.addEventListener('click', async () => {
+            const students = getParsedStudentArray();
+            if (students.length === 0) {
+                showModal('Input Kosong', 'Harap isi setidaknya 1 nama mahasiswa untuk dirandom.');
+                return;
+            }
+
+            const dist = calculateDistribution();
+            if (!dist || dist.numTeams <= 0) return;
+
+            // Lock Button
+            startShuffleBtn.disabled = true;
+            startShuffleBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Fisher-Yates Random Shuffle
+            const shuffled = [...students];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            // Build Team Objects
+            currentTeamsData = Array.from({ length: dist.numTeams }, (_, i) => ({
+                id: i + 1,
+                name: `KELOMPOK ${i + 1}`,
+                capacity: dist.capacities[i],
+                members: [],
+                style: RETRO_CARD_STYLES[i % RETRO_CARD_STYLES.length]
+            }));
+
+            // Prepare Skeleton View
+            renderSkeletonCards();
+
+            // Sequentially Distribute Members with Retro Animation Delay
+            let studentIdx = 0;
+            for (let t = 0; t < currentTeamsData.length; t++) {
+                const team = currentTeamsData[t];
+                for (let c = 0; c < team.capacity; c++) {
+                    if (studentIdx < shuffled.length) {
+                        const member = shuffled[studentIdx];
+                        team.members.push(member);
+                        studentIdx++;
+
+                        // Append Member row
+                        appendMemberToUI(team.id, member, team.members.length);
+                        await new Promise(r => setTimeout(r, 60)); // Fast retro fill animation
+                    }
+                }
+            }
+
+            // Unlock Button
+            startShuffleBtn.disabled = false;
+            startShuffleBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            lucide.createIcons();
+        });
+
+        // Render Empty Retro Cards
+        function renderSkeletonCards() {
+            teamsOutputContainer.innerHTML = '';
+            currentTeamsData.forEach(team => {
+                const card = document.createElement('div');
+                card.id = `card-team-${team.id}`;
+                card.className = "bg-retro-cardBg border-4 border-retro-ink p-4 shadow-retro-lg flex flex-col justify-between space-y-3 relative paper-texture";
+                
+                card.innerHTML = `
+                    <div class="absolute -top-3 -right-2 bg-retro-sand border-2 border-retro-ink font-mono text-[10px] px-2 py-0.5 shadow-retro-sm">
+                        KAPASITAS: ${team.capacity}
+                    </div>
+
+                    <div>
+                        <div class="flex items-center gap-2 border-b-2 border-retro-ink pb-2.5 mb-3">
+                            <span class="w-7 h-7 font-mono font-bold text-xs flex items-center justify-center border-2 border-retro-ink ${team.style.bg} ${team.style.text} shadow-retro-sm">
+                                0${team.id}
+                            </span>
+                            <h3 class="font-serif font-extrabold text-base text-retro-ink tracking-tight">
+                                ${team.name}
+                            </h3>
+                        </div>
+
+                        <ol id="ul-team-${team.id}" class="space-y-1.5 font-mono text-xs">
+                            <!-- Members injected dynamically -->
+                        </ol>
+                    </div>
+
+                    <div class="pt-2 border-t border-retro-ink/30 flex items-center justify-between font-mono text-[10px] text-retro-brown">
+                        <span>EST. REGISTRATION</span>
+                        <span id="counter-team-${team.id}">0 / ${team.capacity} Mahasiswa</span>
+                    </div>
+                `;
+                teamsOutputContainer.appendChild(card);
+            });
+        }
+
+        // Injects single member with animation
+        function appendMemberToUI(teamId, name, index) {
+            const container = document.getElementById(`ul-team-${teamId}`);
+            const counter = document.getElementById(`counter-team-${teamId}`);
+            if (!container) return;
+
+            const li = document.createElement('li');
+            li.className = "p-2 bg-cream-100 border-2 border-retro-ink shadow-retro-sm flex items-center justify-between font-bold transform translate-x-1 opacity-0 transition-all duration-150";
+            li.innerHTML = `
+                <div class="flex items-center gap-2 truncate">
+                    <span class="text-retro-terracotta text-[11px] font-extrabold">#${index}</span>
+                    <span class="truncate text-retro-ink">${escapeHtml(name)}</span>
+                </div>
+                <i data-lucide="check" class="w-3.5 h-3.5 text-retro-sage flex-shrink-0"></i>
+            `;
+
+            container.appendChild(li);
+
+            if (counter) {
+                const teamObj = currentTeamsData.find(t => t.id === teamId);
+                if (teamObj) counter.innerText = `${teamObj.members.length} / ${teamObj.capacity} Mahasiswa`;
+            }
+
+            requestAnimationFrame(() => {
+                li.classList.remove('translate-x-1', 'opacity-0');
+            });
+        }
+
+        // Render Empty Placeholder State
+        function renderEmptyPlaceholder() {
+            teamsOutputContainer.innerHTML = `
+                <div class="sm:col-span-2 bg-retro-cardBg border-4 border-dashed border-retro-ink p-10 text-center flex flex-col items-center justify-center space-y-3">
+                    <div class="w-16 h-16 bg-cream-200 border-2 border-retro-ink flex items-center justify-center shadow-retro-sm">
+                        <i data-lucide="users" class="w-8 h-8 text-retro-brown"></i>
+                    </div>
+                    <h3 class="font-serif text-lg font-bold">Belum Ada Kelompok Terbentuk</h3>
+                    <p class="font-mono text-xs text-retro-brown max-w-md leading-relaxed">
+                        Masukkan daftar mahasiswa di panel sebelah kiri lalu tekan tombol <b class="text-retro-terracotta">"MULAI ACAK KELOMPOK"</b>.
+                    </p>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Copy to Clipboard Functionality
+        copyClipboardBtn.addEventListener('click', () => {
+            if (currentTeamsData.length === 0 || currentTeamsData.every(t => t.members.length === 0)) {
+                showModal('Peringatan', 'Belum ada kelompok yang dibuat. Silakan acak terlebih dahulu.');
+                return;
+            }
+
+            let textOutput = `====================================\n`;
+            textOutput += ` HASIL PEMBAGIAN KELOMPOK MAHASISWA \n`;
+            textOutput += `====================================\n\n`;
+
+            currentTeamsData.forEach(t => {
+                textOutput += `📋 ${t.name} (Total: ${t.members.length} Orang)\n`;
+                t.members.forEach((m, idx) => {
+                    textOutput += `  ${idx + 1}. ${m}\n`;
+                });
+                textOutput += `\n`;
+            });
+
+            // ExecCommand Fallback Copy
+            const tempArea = document.createElement('textarea');
+            tempArea.value = textOutput;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+
+            showModal('Berhasil Disalin!', 'Hasil pembagian kelompok telah disalin ke papan klip (clipboard).');
+        });
+
+        // Retro Modal Helpers
+        function showModal(title, msg) {
+            modalTitleText.innerText = title;
+            modalMsgText.innerText = msg;
+            retroModal.classList.remove('hidden');
+            setTimeout(() => {
+                retroModal.classList.remove('opacity-0');
+                retroModalBox.classList.remove('scale-95');
+            }, 10);
+        }
+
+        modalOkBtn.addEventListener('click', () => {
+            retroModal.classList.add('opacity-0');
+            retroModalBox.classList.add('scale-95');
+            setTimeout(() => {
+                retroModal.classList.add('hidden');
+            }, 200);
+        });
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
